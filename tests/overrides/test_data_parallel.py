@@ -58,17 +58,24 @@ def test_lightning_wrapper_module_warn_none_output(wrapper_class):
     pl_module.training_step.return_value = None
     pl_module.validation_step.return_value = None
     pl_module.test_step.return_value = None
+    pl_module.predict.return_value = None
 
     with pytest.warns(UserWarning, match="Your training_step returned None"):
         pl_module.running_stage = RunningStage.TRAINING
         wrapped_module()
 
-    with pytest.warns(UserWarning, match="Your test_step returned None"):
+    with pytest.warns(None, match="Your test_step returned None") as record:
         pl_module.running_stage = RunningStage.TESTING
         wrapped_module()
+        assert not record
 
-    with pytest.warns(UserWarning, match="Your validation_step returned None"):
+    with pytest.warns(None, match="Your validation_step returned None") as record:
         pl_module.running_stage = RunningStage.EVALUATING
+        wrapped_module()
+        assert not record
+
+    with pytest.warns(UserWarning, match="Your predict returned None"):
+        pl_module.running_stage = RunningStage.PREDICTING
         wrapped_module()
 
     with pytest.warns(None) as record:

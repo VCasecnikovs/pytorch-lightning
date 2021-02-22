@@ -58,11 +58,9 @@ class _LightningModuleWrapperBase(DeviceDtypeModuleMixin, torch.nn.Module):
 
         elif running_stage == RunningStage.TESTING:
             output = self.module.test_step(*inputs, **kwargs)
-            warn_if_output_is_none(output, "test_step")
 
         elif running_stage == RunningStage.EVALUATING:
             output = self.module.validation_step(*inputs, **kwargs)
-            warn_if_output_is_none(output, "validation_step")
 
         elif running_stage == RunningStage.PREDICTING:
             output = self.module.predict(*inputs, **kwargs)
