@@ -14,6 +14,7 @@ from pytorch_lightning.overrides.data_parallel import (
 from pytorch_lightning.trainer.states import RunningStage
 from tests.helpers import BoringModel
 from tests.helpers.runif import RunIf
+from tests.helpers.utils import no_warning_call
 
 
 @pytest.mark.parametrize("wrapper_class", [
@@ -66,25 +67,21 @@ def test_lightning_wrapper_module_warn_none_output(wrapper_class):
 
     pl_module.automatic_optimization = False
 
-    with pytest.warns(None, match="Your training_step returned None") as record:
+    with no_warning_call(UserWarning, match="Your training_step returned None"):
         pl_module.running_stage = RunningStage.TRAINING
         wrapped_module()
-        assert not record
 
-    with pytest.warns(None, match="Your test_step returned None") as record:
+    with no_warning_call(UserWarning, match="Your test_step returned None"):
         pl_module.running_stage = RunningStage.TESTING
         wrapped_module()
-        assert not record
 
-    with pytest.warns(None, match="Your validation_step returned None") as record:
+    with no_warning_call(UserWarning, match="Your validation_step returned None"):
         pl_module.running_stage = RunningStage.EVALUATING
         wrapped_module()
-        assert not record
 
-    with pytest.warns(None, match="Your predict returned None") as record:
+    with no_warning_call(UserWarning, match="Your predict returned None"):
         pl_module.running_stage = RunningStage.PREDICTING
         wrapped_module()
-        assert not record
 
     with pytest.warns(None) as record:
         pl_module.running_stage = None
