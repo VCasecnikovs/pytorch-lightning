@@ -66,7 +66,6 @@ class _LightningModuleWrapperBase(DeviceDtypeModuleMixin, torch.nn.Module):
 
         elif running_stage == RunningStage.PREDICTING:
             output = self.module.predict(*inputs, **kwargs)
-            warn_if_output_is_none(output, "predict")
 
         else:
             output = self.module(*inputs, **kwargs)
