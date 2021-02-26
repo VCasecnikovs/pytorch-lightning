@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any
-
 import torch
 from torch.nn import DataParallel
 from torch.nn.parallel import DistributedDataParallel
@@ -20,9 +18,6 @@ from torch.nn.parallel import DistributedDataParallel
 from pytorch_lightning.core.lightning import LightningModule
 from pytorch_lightning.trainer.states import RunningStage
 from pytorch_lightning.utilities.device_dtype_mixin import DeviceDtypeModuleMixin
-from pytorch_lightning.utilities.warnings import WarningCache
-
-warning_cache = WarningCache()
 
 
 class _LightningModuleWrapperBase(DeviceDtypeModuleMixin, torch.nn.Module):
@@ -55,9 +50,6 @@ class _LightningModuleWrapperBase(DeviceDtypeModuleMixin, torch.nn.Module):
             if not self.module.automatic_optimization:
                 self.module.trainer.model.require_backward_grad_sync = False
 
-            if self.module.automatic_optimization:
-                warn_if_output_is_none(output, "training_step")
-
         elif running_stage == RunningStage.TESTING:
             output = self.module.test_step(*inputs, **kwargs)
 
@@ -74,12 +66,6 @@ class _LightningModuleWrapperBase(DeviceDtypeModuleMixin, torch.nn.Module):
 
     def on_post_move_to_device(self):
         pass
-
-
-def warn_if_output_is_none(output: Any, method_name: str) -> None:
-    """ Warns user about which method returned None. """
-    if output is None:
-        warning_cache.warn(f'Your {method_name} returned None. Did you forget to return an output?')
 
 
 def unwrap_lightning_module(wrapped_model) -> LightningModule:
