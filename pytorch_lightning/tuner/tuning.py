@@ -33,6 +33,10 @@ class Tuner:
         self.trainer.auto_scale_batch_size = auto_scale_batch_size
 
     def tune(self, model, train_dataloader, val_dataloaders, datamodule):
+        
+        # set local properties on the model
+        self.trainer.model_connector.copy_trainer_model_properties(model)
+        
         # setup data, etc...
         self.trainer.train_loop.setup_fit(model, train_dataloader, val_dataloaders, datamodule)
 
